@@ -1,0 +1,24 @@
+[package]
+name = "FreeBSD-fs-crypt"
+version = "0.1.4"
+edition = "2021"
+authors = ["Afshin Tavahin <afshin@tavahin.com>"]
+description = "A transparent filesystem encryption module for FreeBSD"
+license = "MIT"
+repository = "https://github.com/TavahinAfshin/FreeBSD-fs-crypt"
+
+[lib]
+name = "freebsd_fs_crypt"
+crate-type = ["cdylib"]
+
+[dependencies]
+libc = "0.2"
+aes-gcm = "0.10.1"
+rand = "0.8"
+x25519-dalek = "1.2"
+sha2 = "0.10"
+lazy_static = "1.4"
+
+[build-dependencies]
+bindgen = "0.60"
+cc = "1.0"
