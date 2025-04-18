@@ -1,68 +1,109 @@
-# FreeBSD‑fs‑crypt
+# FreeBSD-fs-crypt
 
-**Version 0.1.4 – MIT License**  
-*A transparent filesystem‑encryption kernel module for FreeBSD, written in Rust.*
+**Version:** 0.1.4  
+**License:** MIT  
+**Author:** [Afshin Tavahin](mailto:afshin@tavahin.com)  
+**Repository:** [GitHub - TavahinAfshin/FreeBSD-fs-crypt](https://github.com/TavahinAfshin/FreeBSD-fs-crypt)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Build status](https://img.shields.io/badge/FreeBSD-kmod-orange)](#building)
-[![Rust Edition](https://img.shields.io/badge/Rust-2021-blue)](https://www.rust-lang.org/)
+## Overview
 
----
+**FreeBSD-fs-crypt** is a kernel module for FreeBSD that enables **transparent filesystem encryption** using the **Rust** programming language. It automatically encrypts data written to disk and decrypts data read from disk — without requiring user intervention. This module is designed to enhance privacy and security at the system level, while remaining invisible to applications and users.
 
-## Table of Contents
-1. [Why FreeBSD‑fs‑crypt?](#why-freebsd-fs-crypt)
-2. [Features](#features)
-3. [Architecture](#architecture)
-4. [Quick Start](#quick-start)
-5. [Building the Module](#building)
-6. [Key Management](#key-management)
-7. [Performance Notes](#performance-notes)
-8. [Roadmap](#roadmap)
-9. [Contributing](#contributing)
-10. [License](#license)
+> All filesystem I/O remains transparent — users interact with files normally, while encryption and decryption happen behind the scenes.
 
 ---
 
-## Why FreeBSD‑fs‑crypt?
-While ZFS and GELI provide powerful encryption options, they operate at the pool or
-block‑device level. **FreeBSD‑fs‑crypt** focuses on *per‑file* transparency:
-applications read and write plaintext, while on‑disk data remain AES‑256‑GCM
-encrypted—no user intervention required. Built entirely in Rust, the project
-leverages memory‑safety guarantees while interfacing with the FreeBSD kernel
-through an ergonomic FFI layer.
+## ✨ Features
+
+- 🔐 **AES-256-GCM Encryption** for strong authenticated encryption
+- 🔑 **Secure Key Management** for generating, storing, and retrieving encryption keys
+- ⚙️ **Transparent VFS Integration** — no change to user workflows
+- 🚫 **Tamper Protection** using authenticated encryption
+- 🦀 **Memory Safety** through Rust
+- 🧠 **Cross-Platform Development Support** (FreeBSD target with macOS/Windows dev support)
 
 ---
 
-## Features
-| Capability                        | Status | Notes |
-|----------------------------------|:------:|-------|
-| Transparent read/write encryption| ✅     | VFS hooks wrap every `VOP_READ` / `VOP_WRITE` |
-| AES‑256‑GCM (authenticated)      | ✅     | Provides confidentiality & integrity |
-| Secure key generation & storage  | ✅     | Per‑filesystem master key + per‑file nonces |
-| Rust → Kernel FFI safety layer   | ✅     | `#![no_std]` + `kernel_shim` crate |
-| Conditional compilation (macOS/Win dev) | ✅ | Build‑time `cfg` gates |
-| Post‑quantum cipher plug‑in      | 🚧     | Kyber integration slated for v0.2 |
+## 🧱 Architecture
+
+The module is built on a layered architecture:
+
+### 1. Kernel Integration Layer
+Interfaces with FreeBSD’s kernel via **FFI (Foreign Function Interface)** to hook into system-level operations.
+
+### 2. Cryptography Module
+Implements **AES-256-GCM** using Rust’s cryptography libraries for encryption and decryption.
+
+### 3. Key Management System
+Handles:
+- Secure key generation using strong CSPRNGs
+- In-memory key storage (with optional hardware backing in future versions)
+- Support for future post-quantum crypto integration
+
+### 4. VFS Hooks
+Intercepts file read and write operations at the **Virtual File System (VFS)** layer to apply encryption and decryption logic.
 
 ---
 
-## Architecture
+## ⚙️ Development & Usage
 
-```text
-          +---------------------------+
-          |   User Applications       |
-          +-------------+-------------+
-                        |
-                  VFS Calls (read/write/open)
-                        |
-         +--------------v---------------+
-         |  FreeBSD‑fs‑crypt VFS Hooks  |
-         +--+------------------------+--+
-            |                        |
-   +--------v--------+      +--------v--------+
-   |  Crypto Module  |      |  Key Manager    |
-   |  (AES‑256‑GCM)  |      |  (kernel vault) |
-   +--------+--------+      +--------+--------+
-            |                        |
-   +--------v--------+      +--------v--------+
-   |   FreeBSD VFS   |      |  Entropy Source |
-   +-----------------+      +-----------------+
+- ✅ **Target OS**: FreeBSD (13+)
+- 💻 **Dev Platforms**: macOS, Windows, FreeBSD
+- 🔧 **Language**: Rust (2021 Edition) with `bindgen` and `libc` FFI integration
+- 📦 Built with conditional compilation to isolate platform-specific logic
+
+---
+
+## 🚧 Status and Roadmap
+
+### Current Status: `In Development`
+
+### Roadmap:
+- [x] VFS operation interception (basic prototype)
+- [x] AES-256-GCM encryption/decryption engine
+- [x] Basic key management layer
+- [ ] Full integration into FreeBSD kernel module interface
+- [ ] Extensive testing with edge cases
+- [ ] Security audits and performance benchmarking
+- [ ] Post-quantum cryptography support (research phase)
+- [ ] Open source release with documentation
+
+---
+
+## 🔐 Security Considerations
+
+- Uses **authenticated encryption** to ensure both confidentiality and integrity
+- Minimizes memory safety issues via Rust’s ownership model
+- Plans to integrate **post-quantum encryption** in future releases
+- Focus on high-performance I/O encryption with minimal overhead
+
+---
+
+## 📢 Contributions
+
+Contributions are welcome once the initial prototype stabilizes. Planned areas for contribution:
+
+- Testing suite and fuzzing
+- Performance improvements
+- Cryptographic algorithm alternatives
+- Documentation and user guides
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).
+
+---
+
+## 🙋‍♂️ Contact
+
+**Afshin Tavahin**  
+📧 [afshin@tavahin.com](mailto:afshin@tavahin.com)  
+🌐 [GitHub: TavahinAfshin](https://github.com/TavahinAfshin)
+
+---
+
+> _Secure the filesystem, transparently._  
+> — FreeBSD-fs-crypt
+
